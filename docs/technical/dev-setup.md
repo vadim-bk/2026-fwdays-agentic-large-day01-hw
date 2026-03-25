@@ -66,6 +66,7 @@ yarn clean-install
 ### Option A (recommended): from the repo root
 
 Root `package.json` has:
+
 - `start`: `yarn --cwd ./excalidraw-app start`
 
 So run:
@@ -134,6 +135,7 @@ yarn test:all
 ### Auto-fix
 
 Root `package.json` provides:
+
 - `fix:other` → prettier write
 - `fix:code` → eslint --fix
 - `fix` → both
@@ -233,4 +235,3 @@ yarn clean-install
 ### Tests/lint don’t match CI
 
 CI uses Node `20.x` (workflows `test.yml`, `lint.yml`). If you’re on Node 18/19 and see strange differences, verify whether it reproduces on Node 20.
-

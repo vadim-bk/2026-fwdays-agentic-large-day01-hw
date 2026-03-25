@@ -1,14 +1,12 @@
 # Architecture (fact-based, from source)
 
-This document describes the monorepo architecture and runtime flows **strictly** based on the source code in this repository.
-Terminology: `appState` = the editor’s React state (`packages/excalidraw/components/App.tsx`), `elements` = the scene elements (`packages/element/src/Scene.ts`), `actionManager` = the actions registry/dispatcher (`packages/excalidraw/actions/manager.tsx`).
+This document describes the monorepo architecture and runtime flows **strictly** based on the source code in this repository. Terminology: `appState` = the editor’s React state (`packages/excalidraw/components/App.tsx`), `elements` = the scene elements (`packages/element/src/Scene.ts`), `actionManager` = the actions registry/dispatcher (`packages/excalidraw/actions/manager.tsx`).
 
 ---
 
 ## High-level Architecture
 
-This repository is a **Yarn workspaces monorepo** (`package.json`: `workspaces: ["excalidraw-app","packages/*","examples/*"]`).
-The core editor lives in `packages/excalidraw`, while domain logic is split into separate packages (`packages/common`, `packages/math`, `packages/element`, `packages/utils`).
+This repository is a **Yarn workspaces monorepo** (`package.json`: `workspaces: ["excalidraw-app","packages/*","examples/*"]`). The core editor lives in `packages/excalidraw`, while domain logic is split into separate packages (`packages/common`, `packages/math`, `packages/element`, `packages/utils`).
 
 Key runtime components of the editor (based on imports and instances created in `App`):
 
@@ -94,6 +92,7 @@ Canvases receive DOM events (pointer/mouse/touch/keyboard) via props passed from
 Then the flow branches:
 
 - **Via `ActionManager`**:
+
   - `App` constructs `this.actionManager = new ActionManager(...)` and registers actions (`registerAll(actions)` + undo/redo).
   - `ActionManager.handleKeyDown()` selects an action via `keyTest`, respects `UIOptions.canvasActions`, and calls `action.perform(...)`.
   - `ActionManager.executeAction(...)` calls `action.perform(...)` for source `"api"` or others (`"ui"`, `"keyboard"`).
@@ -131,24 +130,26 @@ This section is intentionally limited to the three entities requested.
 ### `appState` (the editor’s React state)
 
 Type source:
+
 - `packages/excalidraw/types.ts`: `export interface AppState { ... }`
 
 Initialization and “storage/export stripping”:
+
 - `packages/excalidraw/appState.ts`: `getDefaultAppState()`
 - same file: `APP_STATE_STORAGE_CONF` + functions
   - `clearAppStateForLocalStorage(appState)`
   - `cleanAppStateForExport(appState)`
-  - `clearAppStateForDatabase(appState)`
-  which keep only keys allowed for the given storage type (`browser`/`export`/`server`).
+  - `clearAppStateForDatabase(appState)` which keep only keys allowed for the given storage type (`browser`/`export`/`server`).
 
 `appState`’s role in canvas rendering:
+
 - `packages/excalidraw/types.ts` defines subsets:
   - `StaticCanvasAppState`
-  - `InteractiveCanvasAppState`
-and describes which fields are needed for static vs interactive canvas.
+  - `InteractiveCanvasAppState` and describes which fields are needed for static vs interactive canvas.
 - `InteractiveCanvas.tsx` has `getRelevantAppStateProps(appState): InteractiveCanvasAppState` which selects keys from `AppState`.
 
 Fact about the global “setter API”:
+
 - `App` exposes `setAppState` as an alias to `this.setState`:
   - `setAppState: React.Component<any, AppState>["setState"] = (state, callback) => { this.setState(state, callback); }`
   - and passes it via `ExcalidrawSetAppStateContext.Provider` to child components (`LayerUI`, `Hyperlink`, ...).
@@ -156,19 +157,21 @@ Fact about the global “setter API”:
 ### `elements` (scene data)
 
 Source of truth:
+
 - `Scene` in `packages/element/src/Scene.ts` holds:
   - `elements` and `elementsMap` (including deleted)
   - `nonDeletedElements` and `nonDeletedElementsMap`
 
 Key facts from `Scene.ts`:
+
 - `sceneNonce` — a “renderer cache-invalidation nonce” (explicitly described in a comment) and accessible via `getSceneNonce()`.
 - `getSelectedElements(...)` caches results for the combination of:
   - `selectedElementIds`
   - `includeBoundTextElement`
-  - `includeElementsInFrames`
-  (hash is formed by `hashSelectionOpts`, cache is stored in `selectedElementsCache`).
+  - `includeElementsInFrames` (hash is formed by `hashSelectionOpts`, cache is stored in `selectedElementsCache`).
 
 How `App` gets elements:
+
 - `App.render()` uses `this.scene.getSelectedElements(this.state)` for UI logic.
 - `App.render()` passes `this.scene.getNonDeletedElements()` into `ExcalidrawElementsContext.Provider`.
 - For actions: `ActionManager` gets elements via the callback `() => this.scene.getElementsIncludingDeleted()`.
@@ -176,9 +179,11 @@ How `App` gets elements:
 ### `actionManager` (`ActionManager`)
 
 Definition:
+
 - `packages/excalidraw/actions/manager.tsx`: `export class ActionManager { ... }`
 
 Structural facts:
+
 - `actions: Record<ActionName, Action>` — action registry keyed by name.
 - `registerAction(action)` and `registerAll(actions)` — registration.
 - `handleKeyDown(event)`:
@@ -192,11 +197,13 @@ Structural facts:
   - calls `action.perform(...)`
 
 Fact about async `ActionResult`:
+
 - in the `ActionManager` constructor, `updater` is wrapped:
   - if `ActionResult` is promise-like (`isPromiseLike`), it waits for `.then(...)` and then calls the updater.
   - otherwise it calls the updater synchronously.
 
 Fact about UI panel rendering:
+
 - `renderAction(name, data?)` returns a `PanelComponent` if the action has `PanelComponent` and it’s enabled via `UIOptions.canvasActions`.
 
 ---
@@ -220,6 +227,7 @@ In `App.render()`:
   - `sceneNonce` as a parameter for memoize invalidation
 
 Output:
+
 - `elementsMap: RenderableElementsMap` (map for rendering)
 - `visibleElements: NonDeletedExcalidrawElement[]` (viewport subset)
 
@@ -234,6 +242,7 @@ Fact from `Renderer.getRenderableElements()` (`packages/excalidraw/scene/Rendere
 ### 2) `StaticCanvas` (rendering the “main” scene)
 
 `StaticCanvas` receives:
+
 - `canvas={this.canvas}` (created in the constructor as a DOM canvas)
 - `rc={this.rc}` (roughjs canvas wrapper: `rough.canvas(this.canvas)`)
 - `elementsMap`, `visibleElements`, `allElementsMap`
@@ -339,4 +348,3 @@ flowchart LR
 - `packages/element/src/renderElement.ts`
   - uses `@excalidraw/common` (constants/utils) and `@excalidraw/math`
   - accepts `StaticCanvasAppState` / `InteractiveCanvasAppState` types from `@excalidraw/excalidraw/types`
-

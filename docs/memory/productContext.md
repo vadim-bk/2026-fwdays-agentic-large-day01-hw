@@ -28,7 +28,7 @@ For domain glossary → see [docs/product/domain-glossary.md](../product/domain-
   - Runs as a Vite SPA; build output is served as static assets (see `excalidraw-app/vite.config.mts` and root `Dockerfile` nginx stage).
 - **Embeddable component**: `packages/excalidraw/` → `@excalidraw/excalidraw`
   - Distributed as ESM with an `exports` map + `index.css` entry (see `packages/excalidraw/package.json`).
-- **Examples**: `examples/`*
+- **Examples**: `examples/`\*
   - Next.js and “script in browser” examples are referenced in `packages/excalidraw/README.md`.
 
 ## Key product capabilities (verified by code/config)
@@ -58,4 +58,3 @@ For domain glossary → see [docs/product/domain-glossary.md](../product/domain-
 - **For app contributors**: `yarn start` runs the app locally; `yarn build` produces a deployable static build.
 - **For library users**: following `packages/excalidraw/README.md` yields a visible editor (CSS import + non-zero-height container).
 - **For distribution**: Docker build serves the app via nginx (`Dockerfile`, `docker-compose.yml`).
-

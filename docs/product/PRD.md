@@ -83,4 +83,3 @@ This PRD describes the product and requirements **within the scope of this repos
 ### Quality & maintainability
 
 - **Lint/format/tests**: the repo has ESLint/Prettier/Vitest and “all checks” commands (`yarn test:all`) that set the minimum quality bar for changes.
-
