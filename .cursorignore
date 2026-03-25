@@ -17,6 +17,11 @@ dist
 firebase
 logs
 node_modules
+next/
+.nyc_output/
+*.min.js
+*.min.css
+.git/
 npm-debug.log*
 package-lock.json
 yarn-debug.log*
