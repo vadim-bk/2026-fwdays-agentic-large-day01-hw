@@ -203,7 +203,7 @@ git push -u origin HEAD
 
 This repo has a PR template `.github/PULL_REQUEST_TEMPLATE.md` which expects a checklist (including `docs/technical/dev-setup.md` as a bonus item).
 
-It also enables GitHub Action `Semantic PR title` (`.github/workflows/semantic-pr-title.yml`) via `amannn/action-semantic-pull-request@v5`.
+It also enables the GitHub Actions workflow `Semantic PR title` (`.github/workflows/semantic-pr-title.yml`) via `amannn/action-semantic-pull-request@v5`.
 
 Practical implication:
 
