@@ -61,8 +61,8 @@ This PRD describes the product and requirements **within the scope of this repos
 ### Non-goals
 
 - **No built-in backend / SSR**: this repo does not ship a server-side rendered app or a general-purpose backend service.
-- **No hosted persistence guarantee**: not responsible for running/hosting a durable database for users’ scenes outside the app’s integrations.
-- **No hosted realtime guarantee**: not responsible for running/hosting websocket/realtime infrastructure; collaboration depends on external services.
+- **Hosted persistence is not guaranteed**: integrators must provide durable storage for users’ scenes outside the app’s integrations.
+- **Realtime infrastructure is external**: collaboration relies on external websocket/realtime services rather than repo-provided hosting.
 - **No first-party auth service**: not a built-in authentication/authorization provider (integrators choose their own identity/access model).
 - **No official native mobile app**: mobile support is via the web app (PWA/browser), not a dedicated iOS/Android client.
 - **Not a general-purpose CMS**: not intended to be a content management system for websites or documents.
